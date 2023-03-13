@@ -8,15 +8,34 @@ def read_expr_profile(file_name):
 	Read in the gene expression profile to be analyzed.
 
 	Parameters: 
-		file_name (string): the file name of the gene expression profile input file.
+		file_name (string): the file name of the gene expression profile input file. (Most likely a gct file instead of a csv ?)
+							Has to be a two column file. 
 
 	Returns:
-		profile_data (list of strings): a string of the query RNA sequence.
+		Reference profile data (panda series): Series where labels are gene symbols and values are the expression of the respective gene
+
+		
+	d = {'a': 1, 'b': 2, 'c': 3}
+	ser = pd.Series(data=d, index=['a', 'b', 'c'])
+	-->
+	a    1
+	b    2
+	c    3
+
 	'''
 
-	profile_data = pd.read_csv(file_name, sep = "\t")
+	# Read input file:
+	profile_df = pd.read_csv(file_name, sep = "\t", squeeze = True)
 
-	return profile_data
+	# index = gene symbols
+	index = profile_data.iloc[:,1]
+
+	# values = gene_expression
+	values = profile_data.iloc[:,2]
+
+	ref_profile_data = pd.series(index, values)
+
+	return ref_profile_data
 
 
 def read_TCGA_sample(file_name):
@@ -33,13 +52,15 @@ def read_TCGA_sample(file_name):
 
 	bam = bs.AlignmentFile(file_name, 'rb')
 
-	sample_data  = []
+	sample_profile_data   = []
+	bam_sequences = []
 	for complex_read in bam:
-		sample_data .append(complex_read.seq)
-	
-	# sample_data = None
+		# retrieve info about gene symbol and gene expression
+		bam_sequences.append(complex_read.seq)
+		
+	# sample_profile_data = pd.series(index, values)
 
-	return sample_data 
+	return sample_profile_data 
 	
 
 def test_match(profile, sample_data, threshold):
@@ -76,9 +97,9 @@ def check_profile(profile, sample_data):
 		sample_data (list of strings): A list of genes from the sample_data
 
 	Returns:
-		is_present (bool): Wether or not all genes from the sample data are also present in the profile
+		is_present (bool): Whether or not all genes from the sample data are also present in the profile
 	'''
-	# Turn the lists into sets to remove duplicates.
+	# Turn the lists into sets to remove duplicates. IS THIS NECESSARY SINCE THE GENE SYMBOLS ARE THE INDICES IN THE pd.series???
 	profile = list(set(profile))
 	sample_data= list(set(sample_data))
 
@@ -105,7 +126,7 @@ def compute_distance(profile, sample_data):
 	Parameters: 
 		profile (pandas Series): a pandas series with the reference profil
 								data is the expression level, rownames are gene symbols or IDs
-		sample_data(pandas.Series): a pandas series with the sample profile data is the expression level, rownames are gene symbols or 
+		sample_data(pandas.Series): a pandas series with the sample profile data is the expression level, rownames are gene symbols or IDs
 
 	Returns (float): match score - a distance type metric that shows how 
 					0 would be minimum and 1 would be maximum
