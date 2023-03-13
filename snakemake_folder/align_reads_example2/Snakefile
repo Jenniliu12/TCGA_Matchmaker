@@ -1,0 +1,17 @@
+rule map_reads:
+    input:
+        "../data/genome.fa",
+        "../data/samples/{sample}_1.fq",
+        "../data/samples/{sample}_2.fq"
+    output:
+        "../mapped/{sample}.bam"
+    shell:
+        "bwa mem {input} | samtools view -b - > {output}"
+
+rule bam_view:
+	input:
+		"../mapped/{sample}.bam"
+	output:
+		"../mapped/{sample}.txt"
+	shell:
+		"samtools view {input} > {output}"

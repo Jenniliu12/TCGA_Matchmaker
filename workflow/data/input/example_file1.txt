@@ -1,0 +1,9 @@
+symbol	value
+gene1	2
+gene1	3
+protein1	4
+protein2	3
+protein2	2
+gene2	9
+gene3	10
+gene2	2

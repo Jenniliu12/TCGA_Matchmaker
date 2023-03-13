@@ -1,0 +1,8 @@
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - snakemake-minimal =5.2.4
+  - bwa =0.7.17
+  - samtools =1.9

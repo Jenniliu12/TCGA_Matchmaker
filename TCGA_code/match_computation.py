@@ -50,15 +50,16 @@ def read_TCGA_sample(file_name):
 	
 	'''
 
-	bam = bs.AlignmentFile(file_name, 'rb')
+	# Read input file:
+	profile_df = pd.read_csv(file_name, sep = "\t", squeeze = True)
 
-	sample_profile_data   = []
-	bam_sequences = []
-	for complex_read in bam:
-		# retrieve info about gene symbol and gene expression
-		bam_sequences.append(complex_read.seq)
-		
-	# sample_profile_data = pd.series(index, values)
+	# index = gene symbols
+	index = profile_df.iloc[:,1]
+
+	# values = gene_expression
+	values = profile_df.iloc[:,2]
+
+	sample_profile_data = pd.series(index, values)
 
 	return sample_profile_data 
 	
@@ -71,7 +72,7 @@ def test_match(profile, sample_data, threshold):
 	Parameters: 
 		profile (list of strings): A list of genes from the profile
 		sample_data (list of strings): A list of genes from the sample_data
-		threshold (float): Number that determines whehter or not the match is strong enough to be an actual match.
+		threshold (float): Number that determines whether or not the match is strong enough to be an actual match.
 
 	Returns:
 		is_match (bool): Wether or not all genes from the sample data are also present in the profile
@@ -144,6 +145,6 @@ def compute_distance(profile, sample_data):
 	perc_overlap = overlap_no/smaller_set_no  # 1/3 = 0.33
 
 	if (perc_overlap > 0.8):
-		distance = sum(sample_data[intersection]-profile[intersection])
+		distance = sum(sample_data[intersection]-profile[intersection])  # TAKE CORRELATION
 	return distance
 	

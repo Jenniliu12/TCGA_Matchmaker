@@ -1,0 +1,15 @@
+rule preprocess_analysis:
+	input:
+		"data/input/{example}.txt"
+	output:
+		"data/tmp/{example}_out.txt"
+	shell:
+		"grep 'gene' {input} > {output}"
+
+rule custom_analysis:
+	input:
+		"data/tmp/{example}_out.txt"
+	output:
+		"data/results/{example}_res.txt"
+	shell:
+		"python scripts/analysis_script.py {input} {output}"
