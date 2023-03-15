@@ -28,10 +28,10 @@ def read_expr_profile(file_name):
 	profile_df = pd.read_csv(file_name, sep = "\t", squeeze = True)
 
 	# index = gene symbols
-	index = profile_data.iloc[:,1]
+	index = ref_profile_data.iloc[:,1]
 
 	# values = gene_expression
-	values = profile_data.iloc[:,2]
+	values = ref_profile_data.iloc[:,2]
 
 	ref_profile_data = pd.series(index, values)
 
