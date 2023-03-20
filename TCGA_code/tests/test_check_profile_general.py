@@ -1,4 +1,4 @@
-from TCGA_matchmaker_2 import match_computation as m
+from TCGA_code import match_computation as m
 import pandas as pd
 
 # THIS TEST CASE IS A GENERAL CASE
