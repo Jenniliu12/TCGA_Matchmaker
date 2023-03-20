@@ -131,7 +131,7 @@ def compute_distance(profile, sample_data):
 					0 would be minimum and 1 would be maximum
 	
 	'''
-	distance = 0
+	distance = 1
 	# compute distance here
 	#distance = sample_data - profile
 	set1 = set(sample_data.index)  # results in removal of duplicates
@@ -142,6 +142,9 @@ def compute_distance(profile, sample_data):
 	smaller_set_no = min(len(set1), len(set2))  # len = 3
 	perc_overlap = overlap_no/smaller_set_no  # 1/3 = 0.33
 
+	#distance = sample_data[intersection].corr(profile[intersection])
+	#distance = round(distance, 3)
+	
 	if (perc_overlap > 0.6):
 		#distance = sum(abs(sample_data[intersection]-profile[intersection]))  # TAKE CORRELATION
 		distance = sample_data[intersection].corr(profile[intersection])
