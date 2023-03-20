@@ -136,7 +136,7 @@ def compute_distance(profile, sample_data):
 	#distance = sample_data - profile
 	set1 = set(sample_data.index)  # results in removal of duplicates
 	set2 = set(profile.index)      # results in removal of duplicates
-	intersection = set1.intersection(set2)  # returns the elements that are the same among set1 and set2
+	intersection = list(set1.intersection(set2))  # returns the elements that are the same among set1 and set2
 	overlap_no = len(intersection)  # returns the size of the intersection
 
 	smaller_set_no = min(len(set1), len(set2))  # len = 3
@@ -146,6 +146,7 @@ def compute_distance(profile, sample_data):
 	#distance = round(distance, 3)
 	
 	if (perc_overlap > 0.6):
+		print("There is a significant overlap!")
 		#distance = sum(abs(sample_data[intersection]-profile[intersection]))  # TAKE CORRELATION
 		distance = sample_data[intersection].corr(profile[intersection])
 		distance = round(distance, 3)

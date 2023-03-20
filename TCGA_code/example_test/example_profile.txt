@@ -41,4 +41,3 @@ gene55	9
 gene36	23
 gene37	4
 gene38	5
-gene39	5
