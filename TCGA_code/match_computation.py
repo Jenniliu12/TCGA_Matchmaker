@@ -25,13 +25,13 @@ def read_expr_profile(file_name):
 	'''
 
 	# Read input file:
-	profile_df = pd.read_csv(file_name, sep = "\t", squeeze = True)
+	profile_df = pd.read_csv(file_name, sep = "\t")
 
 	# index = gene symbols
-	index = ref_profile_data.iloc[:,1]
+	index = profile_df.iloc[:,1]
 
 	# values = gene_expression
-	values = ref_profile_data.iloc[:,2]
+	values = profile_df.iloc[:,2]
 
 	ref_profile_data = pd.series(index, values)
 	return ref_profile_data
@@ -50,7 +50,7 @@ def read_TCGA_sample(file_name):
 	'''
 
 	# Read input file:
-	profile_df = pd.read_csv(file_name, sep = "\t", squeeze = True)
+	profile_df = pd.read_csv(file_name, sep = "\t")
 
 	# index = gene symbols
 	index = profile_df.iloc[:,1]
