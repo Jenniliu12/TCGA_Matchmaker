@@ -34,7 +34,6 @@ def read_expr_profile(file_name):
 	values = ref_profile_data.iloc[:,2]
 
 	ref_profile_data = pd.series(index, values)
-
 	return ref_profile_data
 
 
@@ -60,7 +59,6 @@ def read_TCGA_sample(file_name):
 	values = profile_df.iloc[:,2]
 
 	sample_profile_data = pd.series(index, values)
-
 	return sample_profile_data 
 	
 
@@ -144,7 +142,9 @@ def compute_distance(profile, sample_data):
 	smaller_set_no = min(len(set1), len(set2))  # len = 3
 	perc_overlap = overlap_no/smaller_set_no  # 1/3 = 0.33
 
-	if (perc_overlap > 0.8):
-		distance = sum(sample_data[intersection]-profile[intersection])  # TAKE CORRELATION
+	if (perc_overlap > 0.6):
+		#distance = sum(abs(sample_data[intersection]-profile[intersection]))  # TAKE CORRELATION
+		distance = sample_data[intersection].corr(profile[intersection])
+		distance = round(distance, 3)
 	return distance
 	
