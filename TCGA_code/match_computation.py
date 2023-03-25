@@ -5,11 +5,11 @@ import bamnostic as bs
 
 def read_expr_profile(file_name):
 	'''
-	Read in the gene expression profile to be analyzed.
+	Read in the gene expression profile to be analyzed. Remove duplicates and average their values.
 
 	Parameters: 
 		file_name (string): the file name of the gene expression profile input file. (Most likely a gct file instead of a csv ?)
-							Has to be a two column file. 
+							 Has to be a two column file. 
 
 	Returns:
 		Reference profile data (panda series): Series where labels are gene symbols and values are the expression of the respective gene
@@ -25,15 +25,14 @@ def read_expr_profile(file_name):
 	'''
 
 	# Read input file:
-	profile_df = pd.read_csv(file_name, sep = "\t")
-
+	profile_df = pd.read_csv(file_name, sep = ";", encoding="UTF-8")
 	# index = gene symbols
-	index = profile_df.iloc[:,1]
+	index = profile_df.iloc[:,0]
 
 	# values = gene_expression
-	values = profile_df.iloc[:,2]
+	values = profile_df.iloc[:,1]
 
-	ref_profile_data = pd.series(index, values)
+	ref_profile_data = pd.Series(index, values)
 	return ref_profile_data
 
 
@@ -50,15 +49,15 @@ def read_TCGA_sample(file_name):
 	'''
 
 	# Read input file:
-	profile_df = pd.read_csv(file_name, sep = "\t")
+	profile_df = pd.read_csv(file_name, sep = ";")
 
 	# index = gene symbols
-	index = profile_df.iloc[:,1]
+	index = profile_df.iloc[:,0]
 
 	# values = gene_expression
-	values = profile_df.iloc[:,2]
+	values = profile_df.iloc[:,1]
 
-	sample_profile_data = pd.series(index, values)
+	sample_profile_data = pd.Series(index, values)
 	return sample_profile_data 
 	
 
