@@ -4,19 +4,28 @@ TCGA matchmaker
   - [X] Task 1.2: Create high-level description document
   - [X] Task 1.3: Create code structure
 - Activity 2: Build prototype
-  - [ ] Activity 2.1 : Refine design to describe tasks
+  - [X] Activity 2.1 : Refine design to describe tasks
     - Task 2.1.1: Break project into activities
     - Task 2.1.2: Break project into tasks
-  - [ ] Activity 2.2: Define high-level functions
+  - [X] Activity 2.2: Define high-level functions
     - Task 2.2.1: Define read/create data function
     - Task 2.2.2: Define analysis function
     - Task 2.2.3: Define save output function
-  - [ ] Activity 2.3: Implement read data and save output and one feature in the analysis
+  - [X] Activity 2.3: Implement read data and save output and one feature in the analysis
     - Task 2.3.1: Implement read/create data function
     - Task 2.3.2: Implement one analysis function: compute profile score for 1 TCGA sample
     - Task 2.3.3: Implement save output function
-        - [ ] The first implementation  of this function will be with a mockup input (like two numbers) and a simple output - the difference
-        - [ ] The next stpe is to have a proper input in the correct format - just that it will be scaled up input - just a small matrix 4x2 for instance and for that I compute a simple match score again: the sum of the differences between my sample and my reference profile
+        - [X] The first implementation  of this function will be with a mockup input (like two numbers) and a simple output - the difference
+        - [X] The next stpe is to have a proper input in the correct format - just that it will be scaled up input - just a small matrix 4x2 for instance and for that I compute a simple match score again: the sum of the differences between my sample and my reference profile
     - Task 2.3.4:
-  - [ ] Activity 2.4: Test prototpye
+  - [X] Activity 2.4: Test prototpye
 - Activity 3. Build prototype II
+  - [X] Activity 3.1 : Create an example pipeline.
+  - [ ] Activity 3.2 : Fix the input reading files (have the allow .csv and .txt files).
+  - [ ] Activity 3.3 : Change the code to work with pd.dataframes instead of pd.series.
+  - [ ] Activity 3.4 : Create more edge cases for the unit tests.
+- Activity 4. Build prototype III
+  - [ ] Activity 4.1 : Create an UI
+  - [ ] Activity 4.2 : Allow upload of several TCGA reference profiles and have them be annotated.
+
+
