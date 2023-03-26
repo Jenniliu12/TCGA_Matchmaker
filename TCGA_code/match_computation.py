@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import bamnostic as bs
+import matplotlib.pyplot as plt
 
 
 def read_expr_profile(file_name):
@@ -151,3 +152,40 @@ def compute_distance(profile, sample_data):
 		distance = round(distance, 3)
 	return distance
 	
+def overlap_gene(profile, sample_data, threshold):
+	
+	'''
+	Checks the match of the sample data and the profile given a certain threshold.
+
+	Parameters: 
+		profile (list of strings): A list of genes from the profile
+		sample_data (list of strings): A list of genes from the sample_data
+		threshold (float): Number that determines whether or not the match is strong enough to be an actual match.
+
+	Returns:
+		sample_overlap (Panda dataframe): Wether or not all genes from the sample data are also present in the profile
+		match_plot: matplotlib object -- scatter plot showing the expression level in sample_data on X-axis, expression level in profile on Y-axis, dot size determined by difference
+	
+	'''
+
+	if test_match(profile, sample_data, threshold):
+		set1 = set(sample_data.index)
+		set2 = set(profile.index)
+		intersection = list(set1.intersection(set2))
+
+		# convert to dataframe and calculate the difference in expression level
+		sample_overlap = sample_data[intersection].to_frame()
+		sample_overlap = sample_overlap.rename(colums = {'name': 'sample_expression'})
+		sample_overlap['profile_expression'] = profile[intersection]
+		sample_overlap['expression_diff'] = abs(sample_overlap['sampe_expression'] + sample_overlap['profile_expression'])
+
+		# scatterplot
+		match_plot = plt.scatter(sample_overlap['sample_expression'], sample_overlap['profile_expression'], s = sample_overlap['expression_diff']*100, alpha = 0.5)
+
+		# add label and title
+		plt.xlabel('Sample expression level')
+		plt.ylabel('Profile expression level')
+		plt.legend()
+		plt.title('Difference in overlapping gene, dot size represent absolute difference')
+
+	return sample_overlap, match_plot
