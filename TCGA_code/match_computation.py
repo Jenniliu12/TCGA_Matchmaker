@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import bamnostic as bs
 from scipy.stats.stats import pearsonr   
 
 
