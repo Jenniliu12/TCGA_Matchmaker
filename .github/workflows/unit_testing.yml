@@ -32,4 +32,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest .
+    - name: Format & lint
+      run: |
+        black . # first run black, then run flake8
+        flake8 --extend-ignore E203 --max-line-length 88 .
 
