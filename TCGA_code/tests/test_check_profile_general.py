@@ -18,13 +18,13 @@ def test_check_profile1():
 
     # (1)
     # Test the function. We expect that all genes of the reference profile are present in the TCGA dataset.
-    new_ref_profile, new_sample = m.check_profile(profile, sample_data, add_missing = False, output = False)
+    new_ref_profile, new_sample, missing_genes = m.check_profile(profile, sample_data, add_missing = False, output = False)
     # This assert statement is expected to be true as no genes should have been dropped here.
     assert new_ref_profile.iloc[:,0].tolist() == profile.iloc[:,0].tolist(), "All genes in the profile should be in the TCGA sample data!"
 
     # (2)
     # Test the function. We expect that all genes of the reference profile are present in the TCGA dataset.
-    new_ref_profile, new_sample = m.check_profile(profile, sample_data, add_missing = True, output = False)
+    new_ref_profile, new_sample, missing_genes = m.check_profile(profile, sample_data, add_missing = True, output = False)
     # This assert statement is expected to be true as no genes should have been dropped here.
     assert new_sample.iloc[:,0].tolist() == sample_data.iloc[:,0].tolist(), "All genes in the profile should be in the TCGA sample data!"
     
@@ -44,14 +44,14 @@ def test_check_profile2():
     # (1)
     # Test the function. We expect that genes of the reference profile are missing in the TCGA dataset.
     # Here, the genes in the reference profile are expected to be dropped. That means we end with only 'gene1'
-    new_ref_profile, new_sample = m.check_profile(profile, sample_data, add_missing = False, output = False)
+    new_ref_profile, new_sample, missing_genes = m.check_profile(profile, sample_data, add_missing = False, output = False)
     print(new_ref_profile)
     # This assert statement is expected to be true as genes should have been dropped here and both now contain only a single gene.
     #assert new_ref_profile.iloc[:,0].tolist() == profile.iloc[:,0].tolist(), "All genes in the profile should be in the TCGA sample data!"
 
     # (2)
     # Test the function. We expect that genes of the reference profile are missing in the TCGA dataset.
-    new_ref_profile, new_sample = m.check_profile(profile, sample_data, add_missing = True, output = False)
+    new_ref_profile, new_sample, missing_genes = m.check_profile(profile, sample_data, add_missing = True, output = False)
     # This assert statement is expected to be true as genes have been added here.
     #assert new_sample.iloc[:,0].tolist() == sample_data.iloc[:,0].tolist(), "All genes in the profile should be in the TCGA sample data!"
 
