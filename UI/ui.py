@@ -12,7 +12,6 @@ window = tk.Tk()
 
 
 
-
 input_ref_profile_var = tk.StringVar()
 input_tcga_profile_var = tk.StringVar()
 missing_values_var = tk.StringVar()
@@ -65,8 +64,11 @@ def analysis_test():
 
 
 
-def analysis(input_profile_path, input_sample_data_path, add_missing = False, output = True):
+def analysis(add_missing = False, output = True):#(input_profile_path, input_sample_data_path, add_missing = False, output = True):
     #print('hello')
+    
+    # IF INPUT PATHS ARE EMPTY RETURN MESSAGE TO THE OUTPUT WINDOW!
+
 
     # Pre-process data:
     #input_profile = m.read_expr_profile(input_profile_path)
@@ -81,12 +83,18 @@ def analysis(input_profile_path, input_sample_data_path, add_missing = False, ou
     # Average the duplicate values
     input_sample_data = input_sample_data.groupby('symbol', as_index=False).mean()
 
+    profile_level = input_profile.iloc[:,1]
+    is_nan = np.all(np.isnan(profile_level))
+    print("IS THERE is_nan?", is_nan)
 
     # Clean data:
-    profile, sample, missing_TCGA = m.check_TCGA(input_profile, input_sample_data, add_missing = True, output = False)
-    input_ref_profile_df, input_tcga_profile_df, missing_reference = m.check_profile(profile, sample, add_missing = True, output = False)
+    profile, sample, missing_TCGA = m.check_TCGA(input_profile, input_sample_data, add_missing, output)
+    input_ref_profile_df, input_tcga_profile_df, missing_reference = m.check_profile(profile, sample, add_missing, output)
 
     # "profile" and "sample" are now pre-processed and clean.
+
+
+    # MAYBE: YOU SHOULD CHECK FOR ISNAN OR ISINF HERE FOR input_ref_profile_df, input_tcga_profile_df
 
     # Compute distance:
     distance = m.compute_distance(input_ref_profile_df, input_tcga_profile_df)
@@ -110,11 +118,11 @@ label.pack()
 # command=partial(read_expr_profile, filename)
 frm_load_input = tk.Frame()
 frm_load_input.pack(fill=tk.X, ipadx=5, ipady=5)
-btn_input_ref = tk.Button(master=frm_load_input, text="Input Reference Profile", command=browseFiles_reference)
 
-btn_input_ref.pack(side=tk.LEFT, padx=10, ipadx=10)
+btn_input_ref = tk.Button(master=frm_load_input, text="Input Reference Profile", command=browseFiles_reference)
+btn_input_ref.grid(row=1, column=0, sticky='e')
 btn_input_TCGA = tk.Button(master=frm_load_input, text="Input TCGA Profile", command=browseFiles_TCGA)
-btn_input_TCGA.pack(side=tk.RIGHT, padx=10, ipadx=10)
+btn_input_TCGA.grid(row=1, column=5, sticky='e')
 
 # Display and save the file paths.
 frm_input_files = tk.Frame(relief=tk.SUNKEN, borderwidth=3)
@@ -169,13 +177,14 @@ btn_enter_parameters.grid(row=3, column=2)
 frm_Analysis = tk.Frame()
 frm_Analysis.pack(fill=tk.X, ipadx=5, ipady=5)
 
-btn_Analysis = tk.Button(master=frm_Analysis, text="Start Analysis", command=partial(analysis, 
-                                                                                     input_ref_profile_var.get(), 
-                                                                                     input_tcga_profile_var.get(), 
-                                                                                     missing_values_var.get(),
-                                                                                     show_output_var.get()))
+# btn_Analysis = tk.Button(master=frm_Analysis, text="Start Analysis", command=partial(analysis, 
+#                                                                                      input_ref_profile_var.get(), 
+#                                                                                      input_tcga_profile_var.get(), 
+#                                                                                      missing_values_var.get(),
+#                                                                                      show_output_var.get()))
 
-
+btn_Analysis = tk.Button(master=frm_Analysis, text="Start Analysis", command=partial(analysis, missing_values_var.get(),
+                                                                                      show_output_var.get()))
 
 #btn_Analysis = tk.Button(master=frm_Analysis, text="Start Analysis", command=analysis_test)
 
