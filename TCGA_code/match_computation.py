@@ -1,84 +1,93 @@
 import numpy as np
 import pandas as pd
 from scipy.stats.stats import pearsonr   
+from scipy.stats import zscore
 
 
 def read_expr_profile(file_name):
     '''
-    Read in the gene expression profile to be analyzed. Remove duplicates and average their values.
+    Read in the gene expression profile to be analyzed. This GE profile is analyzed against a dataset of cancer samples.
+
+    Removes duplicates and average these duplicate values.
+    Asserts that the file is in the correct format of 2 columns. 
+    Asserts that there are no undefined values in the value column
 
     Parameters: 
-        file_name (string): the file name of the gene expression profile input file. (Most likely a gct file instead of a csv ?)
-                             Has to be a two column file. 
+        file_name (string): the file name of the gene expression profile input file. (.csv file or path to .csv file)
+                             Has to be a two column file in the format: 'symbol' (string), 'value' (float or integer)
 
     Returns:
-        Reference profile data (panda series): Series where labels are gene symbols and values are the expression of the respective gene
-
-
-    d = {'a': 1, 'b': 2, 'c': 3}
-    ser = pd.Series(data=d, index=['a', 'b', 'c'])
-    -->
-    a    1
-    b    2
-    c    3
+        Reference profile data (panda df): Pandas dataframe with gene symbol and gene expression levels (pre-processed)
 
     '''
     
-    profile_df = pd.read_csv(file_name, sep = ";", encoding="UTF-8")
+    ref_profile = pd.read_csv(file_name, sep = ";", encoding="UTF-8")
+
+    # Assert that the column size is 2.
+    assert ref_profile.axes[1] == 2, "The number of columns must be 2: 'symbol, value'."
+    assert np.isnan(ref_profile.iloc[:,0]) == False, "There are not defined gene names in the reference profile."
+    assert np.isnan(ref_profile.iloc[:,1]) == False, "There are not defined expression levels in the reference profile."
 
     # Average the duplicate values
-    profile_df = profile_df.groupby('symbol', as_index=False).mean()
+    ref_profile = ref_profile.groupby('symbol', as_index=False).mean()
 
-    index = profile_df.iloc[:,0]
-    values = profile_df.iloc[:,1]
-
-    ref_profile = profile_df
     return ref_profile
 
 
 def read_TCGA_sample(file_name):
     '''
-    Read in the TCGA sample to be analyzed.
+    Read in the TCGA profile to be analyzed. This TCGA profile serves as a dataset of cancer samples.
+
+    Removes duplicates and average these duplicate values.
+    Asserts that the file is in the correct format of 2 columns. 
+    Asserts that there are no undefined values in the value column
 
     Parameters: 
-        file_name (string): the file name of the input file. A .bam file.
+        file_name (string): the file name of the TCGA input file. (.csv file or path to .csv file)
+                             Has to be a two column file in the format: 'symbol' (string), 'value' (float or integer)
 
     Returns:
-        sample_data (list of strings): a string of the query RNA sequence.
+        Reference profile data (panda df): Pandas dataframe with gene symbol and gene expression levels (pre-processed)
 
     '''
 
-    profile_df = pd.read_csv(file_name, sep = ";")
+    TCGA_profile = pd.read_csv(file_name, sep = ";")
+
+    # Assert that the column size is 2.
+    assert TCGA_profile.axes[1] == 2, "The number of columns must be 2: 'symbol, value'"
+    assert np.isnan(TCGA_profile.iloc[:,0]) == False, "There are not defined gene names in the TCGA profile."
+    assert np.isnan(TCGA_profile.iloc[:,1]) == False, "There are not defined expression levels in the TCGA profile."
+
     # Average the duplicate values
-    profile_df = profile_df.groupby('symbol', as_index=False).mean()
+    TCGA_profile = TCGA_profile.groupby('symbol', as_index=False).mean()
 
-    index = profile_df.iloc[:,0]
-    values = profile_df.iloc[:,1]
-
-    TCGA_profile = profile_df
     return TCGA_profile 
 
 
-def test_match(profile, sample_data, threshold):
 
-    '''
-    Checks the match of the sample data and the profile given a certain threshold.
 
-    Parameters: 
-        profile (list of strings): A list of genes from the profile
-        sample_data (list of strings): A list of genes from the sample_data
-        threshold (float): Number that determines whether or not the match is strong enough to be an actual match.
+# def test_match(profile, sample_data, threshold):
 
-    Returns:
-        is_match (bool): Wether or not all genes from the sample data are also present in the profile
+#     '''
+#     Checks the match of the sample data and the profile given a certain threshold.
 
-    '''
-    is_match = False
-    is_present = check_profile(profile, sample_data)
-    if is_present:
-        distance = compute_distance(profile, sample_data)
-        is_match = distance < threshold
-    return is_match
+#     Parameters: 
+#         profile (list of strings): A list of genes from the profile
+#         sample_data (list of strings): A list of genes from the sample_data
+#         threshold (float): Number that determines whether or not the match is strong enough to be an actual match.
+
+#     Returns:
+#         is_match (bool): Wether or not all genes from the sample data are also present in the profile
+
+#         I don´t actually think I need this?
+
+#     '''
+#     is_match = False
+#     is_present = check_profile(profile, sample_data)
+#     if is_present:
+#         distance = compute_distance(profile, sample_data)
+#         is_match = distance < threshold
+#     return is_match
 
 
 def check_profile(profile, sample_data, add_missing = False, output = True):
@@ -119,8 +128,7 @@ def check_profile(profile, sample_data, add_missing = False, output = True):
         if gene not in TCGA_genes:
             missing_genes.append(gene)
             missing_genes_idx.append(idx)
-        idx += 1
-            
+        idx += 1 
     
     # If we don´t want to add temporary zero expression levels to the TCGA_dataset, just remove them from
     # the reference profile set and report them as missing.
@@ -220,7 +228,6 @@ def check_TCGA(profile, sample_data, add_missing = False, output = True):
             print("Gene(s) from the TCGA profile are missing in the reference dataset and are added to the reference dataset with zero expression levels.")
             print(missing_genes)
 
-        
         return profile, sample_data, missing_genes
 
 
@@ -229,7 +236,7 @@ def check_TCGA(profile, sample_data, add_missing = False, output = True):
 def compute_distance(profile, sample_data):
 
     '''
-    Compute the distance between the reference expression profile and a sample expression profile
+    Compute the distance between the reference expression profile and a sample expression profile as a pearson correlation
 
     Parameters: 
         profile (pandas df): a pandas df with the reference profil
@@ -248,3 +255,22 @@ def compute_distance(profile, sample_data):
     distance, p = pearsonr(profile_levels, TCGA_levels)
     return round(distance,4)
 
+
+def normalize_profile(profile, method):
+
+    # SOURCE for mean and min-max: https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
+    if method == "z-score":
+        profile.iloc[:,1] = zscore(profile.iloc[:,1])
+        return profile
+    
+    elif method == "mean":
+        profile.iloc[:,1] = (profile.iloc[:,1]-profile.iloc[:,1].mean())/profile.iloc[:,1].std()
+        return profile
+    
+    elif method == "min-max":
+        profile.iloc[:,1] =( profile.iloc[:,1]-profile.iloc[:,1].min())/(profile.iloc[:,1].max()-profile.iloc[:,1].min())
+        return profile
+    
+    else:
+        print("Not a valid input method")
+        return profile
