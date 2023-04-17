@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats.stats import pearsonr   
 from scipy.stats import zscore
+import matplotlib.pyplot as plt
 
 
 def read_expr_profile(file_name):
@@ -24,9 +25,9 @@ def read_expr_profile(file_name):
     ref_profile = pd.read_csv(file_name, sep = ";", encoding="UTF-8")
 
     # Assert that the column size is 2.
-    assert ref_profile.axes[1] == 2, "The number of columns must be 2: 'symbol, value'."
-    assert np.isnan(ref_profile.iloc[:,0]) == False, "There are not defined gene names in the reference profile."
-    assert np.isnan(ref_profile.iloc[:,1]) == False, "There are not defined expression levels in the reference profile."
+    assert len(ref_profile.axes[1]) == 2, "The number of columns must be 2: 'symbol, value'."
+    assert np.isnan(any(ref_profile.iloc[:,0])) == False, "There are not defined gene names in the reference profile."
+    assert np.isnan(any(ref_profile.iloc[:,1])) == False, "There are not defined expression levels in the reference profile."
 
     # Average the duplicate values
     ref_profile = ref_profile.groupby('symbol', as_index=False).mean()
@@ -54,9 +55,9 @@ def read_TCGA_sample(file_name):
     TCGA_profile = pd.read_csv(file_name, sep = ";")
 
     # Assert that the column size is 2.
-    assert TCGA_profile.axes[1] == 2, "The number of columns must be 2: 'symbol, value'"
-    assert np.isnan(TCGA_profile.iloc[:,0]) == False, "There are not defined gene names in the TCGA profile."
-    assert np.isnan(TCGA_profile.iloc[:,1]) == False, "There are not defined expression levels in the TCGA profile."
+    assert len(TCGA_profile.axes[1]) == 2, "The number of columns must be 2: 'symbol, value'"
+    assert np.isnan(any(TCGA_profile.iloc[:,0])) == False, "There are not defined gene names in the TCGA profile."
+    assert np.isnan(any(TCGA_profile.iloc[:,1])) == False, "There are not defined expression levels in the TCGA profile."
 
     # Average the duplicate values
     TCGA_profile = TCGA_profile.groupby('symbol', as_index=False).mean()
@@ -268,9 +269,116 @@ def normalize_profile(profile, method):
         return profile
     
     elif method == "min-max":
-        profile.iloc[:,1] =( profile.iloc[:,1]-profile.iloc[:,1].min())/(profile.iloc[:,1].max()-profile.iloc[:,1].min())
+        profile.iloc[:,1] =(profile.iloc[:,1]-profile.iloc[:,1].min())/(profile.iloc[:,1].max()-profile.iloc[:,1].min())
         return profile
-    
+    elif method == "raw":
+        return profile
     else:
         print("Not a valid input method")
-        return profile
+        return 0
+    
+def expression_analysis(profile, sample_data, sensitivity_threshold = 0.05):
+    '''
+    Analyses similiarities between the reference expression profile and a sample expression profile:
+        -> Top similiar genes within a threshold
+    
+    Input profiles are to be used after check_profile and check_TCGA
+    Input profile gene columns are expected to match.
+
+    Parameters: 
+        profile (pd.DataFrame): Reference Profile dataset
+        sample_data (pd.DataFrame): TCGA dataset
+
+    Returns (float): 
+        gene_ratio (pd.DataFrame) 
+        similiar (list of genes that have similiar expression levels)
+
+    ''' 
+
+    assert len(profile.axes[0]) == len(sample_data.axes[0]), "Input datasets are not of same length."
+    assert all(profile.eq(sample_data, 0)) == True, "Input gene profiles do not match. Check if they are sorted. Check if genes are missing."
+    
+    # Loop through the dfs and find the genes whose expression levels are most similiar within a certain threshold
+    similiar = []  # list of genes that have similiar expression levels among two profiles
+    ratio_list = []  # list ofthe ratio of genes  
+    for gene in range(len(profile.axes[0])):
+        ratio = profile.iloc[gene, 1]/sample_data.iloc[gene, 1]
+        # Consider the nans. You have to edit this later! I want it to be representative. 
+        if np.isnan(ratio):
+            ratio = 0
+        ratio_list.append(ratio)
+        if abs(ratio-1) <= sensitivity_threshold:
+            similiar.append(gene)
+
+    gene_ratio = pd.DataFrame(list(zip(profile.iloc[:,0].tolist(), ratio_list)), columns =['symbol', 'ratio'])
+
+    return gene_ratio, similiar
+
+
+def gene_bar_chart(gene_ratio, show = "percentage"):
+    '''
+    Prints a bar chart with gene ratios. 
+    
+    Parameters: 
+        gene_ratio (pd.DataFrame) = obtained from expression_analysis function.
+        show (string) = determines whether percentage or discrete count values are shown
+
+    Returns (float): 
+        na
+        (prints bar chart)
+
+    ''' 
+    # loop through dataframe to create bins
+    category = []
+    for ratio in gene_ratio["ratio"]:
+        if ratio <= 0.2:
+            category.append("0.0-0.2")
+        elif ratio > 0.2 and ratio <= 0.4:
+            category.append("0.2-0.4")
+        elif ratio > 0.4 and ratio <= 0.6:
+            category.append("0.4-0.6")
+        elif ratio > 0.6 and ratio <= 0.8:
+            category.append("0.6-0.8")
+        elif ratio > 0.8 and ratio <= 1:
+            category.append("0.8-1.0")
+        elif ratio > 1.0 and ratio <= 1.2:
+            category.append("1.0-1.2")
+        elif ratio > 1.2 and ratio <= 1.4:
+            category.append("1.2-1.4")
+        elif ratio > 1.4 and ratio <= 1.6:
+            category.append("1.4-1.6")
+        elif ratio > 1.6 and ratio <= 1.8:
+            category.append("1.6-1.8")
+        elif ratio > 1.8 and ratio <= 2.0:
+            category.append("1.8-2.0")
+        elif ratio > 2.0:
+            category.append(">2.0")
+        else:
+            category.append("nan")
+    
+    # Count the values of each bin:
+    gene_ratio["category"] = category
+    gene_ratio_count = gene_ratio.groupby('category')["category"].count()
+
+
+    p1 = plt.bar(gene_ratio_count.index.sort_values(), gene_ratio_count,  color=['#FFA500', '#FFA500', '#FFA500', '#FFA500', 
+                                                                                 '#2E8B57', '#2E8B57', 
+                                                                                 '#191970', '#191970','#191970', '#191970','#191970','#191970'])
+                                                                                 
+
+    for rect1 in p1:
+        height = rect1.get_height()
+        if show == "count":
+            plt.annotate("{}".format(height),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
+        else: # shows percentage
+            plt.annotate("{}%".format(round(height/len(gene_ratio),3)),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
+
+    plt.xticks(rotation="vertical")
+    plt.show()
+
+
+
+
+
+
+            
