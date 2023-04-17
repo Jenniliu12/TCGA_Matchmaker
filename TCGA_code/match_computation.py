@@ -257,7 +257,7 @@ def compute_distance(profile, sample_data):
     return round(distance,4)
 
 
-def normalize_profile(profile, method):
+def normalize_profile(profile, method = "z-score"):
 
     # SOURCE for mean and min-max: https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
     if method == "z-score":
@@ -294,10 +294,7 @@ def expression_analysis(profile, sample_data, sensitivity_threshold = 0.05):
         similiar (list of genes that have similiar expression levels)
 
     ''' 
-
-    assert len(profile.axes[0]) == len(sample_data.axes[0]), "Input datasets are not of same length."
-    assert all(profile.eq(sample_data, 0)) == True, "Input gene profiles do not match. Check if they are sorted. Check if genes are missing."
-    
+ 
     # Loop through the dfs and find the genes whose expression levels are most similiar within a certain threshold
     similiar = []  # list of genes that have similiar expression levels among two profiles
     ratio_list = []  # list ofthe ratio of genes  
@@ -372,7 +369,9 @@ def gene_bar_chart(gene_ratio, show = "percentage"):
             plt.annotate("{}".format(height),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
         else: # shows percentage
             plt.annotate("{}%".format(round(height/len(gene_ratio),3)),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
-
+    plt.xlabel = ("Expression Value Ratio: Reference/TCGA")
+    plt.ylabel = ("Number of genes")
+    plt.title = ("Binned Bar Chart: Gene Expression Level Relationship")
     plt.xticks(rotation="vertical")
     plt.show()
 
