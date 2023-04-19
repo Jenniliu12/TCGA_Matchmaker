@@ -1,0 +1,2 @@
+id	filename	md5	size	state
+df630d23-f007-4cc4-9910-edb44046d556	df630d23-f007-4cc4-9910-edb44046d556/a40c1d70-1750-45d0-a85b-688331b029ea.rna_seq.augmented_star_gene_counts.tsv	9e07990dc14e850ad8f3b42d0169ca29	4197333	validated

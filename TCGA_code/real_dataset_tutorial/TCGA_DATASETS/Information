@@ -1,0 +1,7 @@
+
+Compare:
+
+ccrCC (Patient A) with another ccrCC (Patient B) sample  -> expected highest correlation
+ccrCC with another kidney cancer sample -> mid correlation
+ccrCC with normal tissue sample -> low correlation
+ccrCC with breast cancer  -> mid correlation

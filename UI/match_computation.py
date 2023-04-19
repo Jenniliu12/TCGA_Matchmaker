@@ -368,7 +368,7 @@ def gene_bar_chart(gene_ratio, show = "percentage"):
         if show == "count":
             plt.annotate("{}".format(height),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
         else: # shows percentage
-            plt.annotate("{}%".format(round(height/len(gene_ratio),3)),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
+            plt.annotate("{}%".format(round(height/len(gene_ratio),3)*100),(rect1.get_x() + rect1.get_width()/2, height+.05),ha="center",va="bottom",fontsize=9)
     plt.xlabel = ("Expression Value Ratio: Reference/TCGA")
     plt.ylabel = ("Number of genes")
     plt.title = ("Binned Bar Chart: Gene Expression Level Relationship")

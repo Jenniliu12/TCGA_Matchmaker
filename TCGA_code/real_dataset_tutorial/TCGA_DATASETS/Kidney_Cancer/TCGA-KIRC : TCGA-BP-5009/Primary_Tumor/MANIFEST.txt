@@ -1,0 +1,3 @@
+id	filename	md5	size	state
+813cb150-7ef6-4fa7-9a64-c70f9401513c	813cb150-7ef6-4fa7-9a64-c70f9401513c/6834bc84-328c-49be-b78e-61ffec46ef97.rna_seq.augmented_star_gene_counts.tsv	308a4ca0dec476c0e45aabc4f9871b9f	4247961	validated
+\N	813cb150-7ef6-4fa7-9a64-c70f9401513c/annotations.txt	f6b0aa1402fba8692c9f5f308239b6e5	531	\N
