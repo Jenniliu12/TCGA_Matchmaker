@@ -1,0 +1,3 @@
+id	filename	md5	size	state
+b709dc50-afc3-421c-912a-caf0ed4cf9fc	b709dc50-afc3-421c-912a-caf0ed4cf9fc/f43a4550-8d3e-44c5-ad1a-2b0d173809db.rna_seq.augmented_star_gene_counts.tsv	dc901a4be92e13ff915738ec2949aef6	4250530	validated
+\N	b709dc50-afc3-421c-912a-caf0ed4cf9fc/annotations.txt	a6dbbd577cd7c477459642b96bff8eed	281	\N
